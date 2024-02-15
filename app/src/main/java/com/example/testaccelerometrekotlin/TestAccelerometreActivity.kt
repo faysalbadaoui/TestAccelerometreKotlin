@@ -1,6 +1,7 @@
 package com.example.testaccelerometrekotlin
 
 import android.annotation.SuppressLint
+import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -120,7 +121,7 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         if (actualTime - lastUpdate2 < 1000) {
             return
         }
-        if ( abs(event.values[0] - viewModel.lastValue.value) > 200) {
+        if ( abs(event.values[0] - viewModel.lastValue.value) > SensorThresholds.LIGHT) {
             lastUpdate2 = actualTime
             viewModel.changeLowText("New Value Light Sensor = ${event.values[0]}")
             if (event.values[0] < low) {
@@ -142,7 +143,7 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         val accelerationSquareRoot = ((x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH))
         val actualTime = System.currentTimeMillis()
-        if (accelerationSquareRoot >= 1.1) {
+        if (accelerationSquareRoot >= SensorThresholds.ACCELEROMETER) {
             if (actualTime - lastUpdate < 1000) {
                 return
             }
