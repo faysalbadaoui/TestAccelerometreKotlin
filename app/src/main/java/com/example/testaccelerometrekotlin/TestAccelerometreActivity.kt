@@ -10,23 +10,31 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.example.testaccelerometrekotlin.databinding.MainBinding
 
 
-class TestAccelerometreActivity : Activity(), SensorEventListener {
+class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var color = false
     private lateinit var view: TextView
     private var lastUpdate: Long = 0
-
+    //private val viewModel : AccelerometerViewModel = AccelerometerViewModel() by viewModels()
     private lateinit var binding: MainBinding
 
     /** Called when the activity is first created.  */
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = MainBinding.inflate(layoutInflater)
+        /*binding = MainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         view = binding.textView
         view.setBackgroundColor(Color.GREEN)
@@ -37,7 +45,12 @@ class TestAccelerometreActivity : Activity(), SensorEventListener {
             SensorManager.SENSOR_DELAY_NORMAL
         )
         // register this class as a listener for the accelerometer sensor
-        lastUpdate = System.currentTimeMillis()
+        lastUpdate = System.currentTimeMillis()*/
+        setContent {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "hoasdsad")
+            }
+        }
     }
 
     override fun onSensorChanged(event: SensorEvent) {
