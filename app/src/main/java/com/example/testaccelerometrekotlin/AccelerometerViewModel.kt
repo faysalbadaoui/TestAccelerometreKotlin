@@ -11,14 +11,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class AccelerometerViewModel : ViewModel() {
-    var state : MutableLiveData<String> = MutableLiveData("")
-    fun changeValue(newValue: String){
-        state.value = newValue
-    }
 
     private val _midBoxText = MutableStateFlow<String>("")
     val midBoxText : StateFlow<String> = _midBoxText.asStateFlow()
 
+    private val _lowText = MutableStateFlow<String>("")
+    val lowText : StateFlow<String> = _lowText.asStateFlow()
+
+    private val _lastValue = MutableStateFlow<Float>(0f)
+    val lastValue : StateFlow<Float> = _lastValue.asStateFlow()
+
+    fun changeLastValue(newValue: Float){
+        _lastValue.value = newValue
+    }
+    fun changeLowText(newValue: String){
+        _lowText.value = _lowText.value + "\n" + newValue
+    }
     fun changeMidText(newValue: String){
         _midBoxText.value = newValue
     }

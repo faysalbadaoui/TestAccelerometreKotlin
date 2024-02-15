@@ -13,11 +13,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.testaccelerometrekotlin.databinding.MainBinding
+import kotlin.math.abs
 
 class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
 
@@ -33,6 +38,7 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
     private var color = false
     private lateinit var view: TextView
     private var lastUpdate: Long = 0
+    private var lastUpdate2: Long = 0
     private val viewModel : AccelerometerViewModel by viewModels()
     private lateinit var binding: MainBinding
 
@@ -51,8 +57,20 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         }else{
             viewModel.changeMidText("Sorry there Is no Accelerometer in your device")
         }
+        val lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        if(lightSensor != null){
+            viewModel.changeLowText("Max Range: ${lightSensor.maximumRange}")
+            sensorManager.registerListener(
+                this,
+                lightSensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }else{
+            viewModel.changeLowText("Sorry there Is no Light sensor in your device")
+        }
 
         lastUpdate = System.currentTimeMillis()
+        lastUpdate2 = System.currentTimeMillis()
         setContent {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -68,7 +86,7 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
                         .weight(2f)
                         .fillMaxWidth()
                         .background(
-                            androidx.compose.ui.graphics.Color.Red
+                            Color.Red
                         ), contentAlignment = Alignment.Center) {
                         Text(text = viewModel.midBoxText.collectAsState().value)
                     }
@@ -76,9 +94,10 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
                         .weight(1f)
                         .fillMaxWidth()
                         .background(
-                            androidx.compose.ui.graphics.Color.Blue
+                            Color.Yellow
                         ), contentAlignment = Alignment.Center) {
-                        Text(text ="3")
+
+                        Text(text =viewModel.lowText.collectAsState().value, modifier = Modifier.verticalScroll(rememberScrollState()))
                     }
                 }
             }
@@ -86,19 +105,44 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        getAccelerometer(event)
+        if(event.sensor.type == Sensor.TYPE_LIGHT) {
+            getLight(event)
+        }else{
+            getAccelerometer(event)
+        }
     }
+    private fun getLight(event: SensorEvent) {
+        val maxLight = event.sensor.maximumRange
+        val low = maxLight / 3
+        val high = maxLight * (2 / 3)
+        val actualTime = System.currentTimeMillis()
 
+        if (actualTime - lastUpdate2 < 1000) {
+            return
+        }
+        if ( abs(event.values[0] - viewModel.lastValue.value) > 200) {
+            lastUpdate2 = actualTime
+            viewModel.changeLowText("New Value Light Sensor = ${event.values[0]}")
+            if (event.values[0] < low) {
+                viewModel.changeLowText("Low Intensity")
+            } else if (event.values[0] > high) {
+                viewModel.changeLowText("High Intensity")
+            } else {
+                viewModel.changeLowText("Normal Intensity")
+            }
+            viewModel.changeLastValue(event.values[0])
+        }
+    }
     private fun getAccelerometer(event: SensorEvent) {
         val values = event.values
         // Movement
         val x = values[0]
         val y = values[1]
         val z = values[2]
-        val accelerationSquareRoot = (x * x + y * y + z * z
+        val accelerationSquareRoot = ((x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH))
         val actualTime = System.currentTimeMillis()
-        if (accelerationSquareRoot >= 100) {
+        if (accelerationSquareRoot >= 1.1) {
             if (actualTime - lastUpdate < 1000) {
                 return
             }
