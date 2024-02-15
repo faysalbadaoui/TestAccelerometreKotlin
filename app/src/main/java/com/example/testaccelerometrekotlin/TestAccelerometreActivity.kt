@@ -1,8 +1,6 @@
 package com.example.testaccelerometrekotlin
 
-
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -11,7 +9,6 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewModelScope
 import com.example.testaccelerometrekotlin.databinding.MainBinding
 
 class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
