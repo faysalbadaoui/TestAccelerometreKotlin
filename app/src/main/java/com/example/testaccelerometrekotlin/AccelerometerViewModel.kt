@@ -5,4 +5,7 @@ import androidx.lifecycle.ViewModel
 
 class AccelerometerViewModel : ViewModel() {
     var state : MutableLiveData<String> = MutableLiveData("")
+    fun changeValue(newValue: String){
+        state.value = newValue
+    }
 }
