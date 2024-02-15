@@ -33,24 +33,17 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
     private val viewModel : AccelerometerViewModel by viewModels()
     private lateinit var binding: MainBinding
 
-    /** Called when the activity is first created.  */
-
     @SuppressLint("CoroutineCreationDuringComposition")
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*binding = MainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        view = binding.textView
-        view.setBackgroundColor(Color.GREEN)
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         sensorManager.registerListener(
             this,
             sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
             SensorManager.SENSOR_DELAY_NORMAL
         )
-        // register this class as a listener for the accelerometer sensor
-        lastUpdate = System.currentTimeMillis()*/
+        lastUpdate = System.currentTimeMillis()
         setContent {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = viewModel.state.observeAsState().value!!)
