@@ -12,8 +12,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.Color
 import com.example.testaccelerometrekotlin.ui.AccelerometerViewModel
-import com.example.testaccelerometrekotlin.domain.SensorConstants
-import com.example.testaccelerometrekotlin.domain.SensorDelay
+import com.example.testaccelerometrekotlin.data.SensorConstants
+import com.example.testaccelerometrekotlin.data.SensorDelay
 import com.example.testaccelerometrekotlin.ui.MainScreen
 import kotlin.math.abs
 

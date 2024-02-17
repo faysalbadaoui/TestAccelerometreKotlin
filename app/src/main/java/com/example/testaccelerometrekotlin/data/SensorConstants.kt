@@ -1,4 +1,4 @@
-package com.example.testaccelerometrekotlin.domain
+package com.example.testaccelerometrekotlin.data
 
 object SensorConstants{
     const val ACCELEROMETER = 1.1

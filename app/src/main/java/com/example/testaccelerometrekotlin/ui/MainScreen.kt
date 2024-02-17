@@ -46,7 +46,6 @@ fun MainScreen(viewModel: AccelerometerViewModel) {
                         Color.Yellow
                     ), contentAlignment = Alignment.Center
             ) {
-
                 Text(
                     text = viewModel.lowText.collectAsState().value,
                     modifier = Modifier.verticalScroll(rememberScrollState())
