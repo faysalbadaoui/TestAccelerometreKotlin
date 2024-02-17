@@ -1,47 +1,28 @@
 package com.example.testaccelerometrekotlin
 
 import android.annotation.SuppressLint
-import android.content.IntentSender.SendIntentException
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.example.testaccelerometrekotlin.databinding.MainBinding
+import com.example.testaccelerometrekotlin.ui.AccelerometerViewModel
+import com.example.testaccelerometrekotlin.domain.SensorConstants
+import com.example.testaccelerometrekotlin.domain.SensorDelay
+import com.example.testaccelerometrekotlin.ui.MainScreen
 import kotlin.math.abs
 
 class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
-    private var color = false
-    private lateinit var view: TextView
     private var lastUpdate: Long = 0
     private var lastUpdate2: Long = 0
     private val viewModel : AccelerometerViewModel by viewModels()
-    private lateinit var binding: MainBinding
 
     @SuppressLint("CoroutineCreationDuringComposition")
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,35 +54,7 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         lastUpdate = System.currentTimeMillis()
         lastUpdate2 = System.currentTimeMillis()
         setContent {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Box(modifier = Modifier
-                        .weight(2f)
-                        .fillMaxWidth()
-                        .background(
-                            viewModel.boxColor.collectAsState().value
-                        ), contentAlignment = Alignment.Center) {
-                        Text(text ="1")
-                    }
-                    Box(modifier = Modifier
-                        .weight(2f)
-                        .fillMaxWidth()
-                        .background(
-                            Color.Red
-                        ), contentAlignment = Alignment.Center) {
-                        Text(text = viewModel.midBoxText.collectAsState().value)
-                    }
-                    Box(modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .background(
-                            Color.Yellow
-                        ), contentAlignment = Alignment.Center) {
-
-                        Text(text =viewModel.lowText.collectAsState().value, modifier = Modifier.verticalScroll(rememberScrollState()))
-                    }
-                }
-            }
+            MainScreen(viewModel)
         }
     }
 
@@ -118,10 +71,10 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         val high = maxLight * (2 / 3)
         val actualTime = System.currentTimeMillis()
 
-        if (actualTime - lastUpdate2 < 1000) {
+        if (actualTime - lastUpdate2 < SensorDelay.DEFAULT) {
             return
         }
-        if ( abs(event.values[0] - viewModel.lastValue.value) > SensorThresholds.LIGHT) {
+        if ( abs(event.values[0] - viewModel.lastValue.value) > SensorConstants.LIGHT) {
             lastUpdate2 = actualTime
             viewModel.changeLowText("New Value Light Sensor = ${event.values[0]}")
             if (event.values[0] < low) {
@@ -143,8 +96,8 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         val accelerationSquareRoot = ((x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH))
         val actualTime = System.currentTimeMillis()
-        if (accelerationSquareRoot >= SensorThresholds.ACCELEROMETER) {
-            if (actualTime - lastUpdate < 1000) {
+        if (accelerationSquareRoot >= SensorConstants.ACCELEROMETER) {
+            if (actualTime - lastUpdate < SensorDelay.DEFAULT) {
                 return
             }
             lastUpdate = actualTime
@@ -160,9 +113,27 @@ class TestAccelerometreActivity : AppCompatActivity(), SensorEventListener {
         // Do something here if sensor accuracy changes.
     }
 
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(
+            this,
+            sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+        sensorManager.registerListener(
+            this,
+            sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+            SensorManager.SENSOR_DELAY_NORMAL
+        )
+    }
     override fun onPause() {
         // unregister listener
         super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         sensorManager.unregisterListener(this)
     }
 }

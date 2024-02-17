@@ -1,4 +1,4 @@
-package com.example.testaccelerometrekotlin
+package com.example.testaccelerometrekotlin.ui
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
