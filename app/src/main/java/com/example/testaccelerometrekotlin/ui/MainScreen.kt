@@ -24,10 +24,8 @@ fun MainScreen(viewModel: AccelerometerViewModel) {
                     .fillMaxWidth()
                     .background(
                         viewModel.boxColor.collectAsState().value
-                    ), contentAlignment = Alignment.Center
-            ) {
-                Text(text = "1")
-            }
+                    )
+            )
             Box(
                 modifier = Modifier
                     .weight(2f)
